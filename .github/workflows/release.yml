@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ethereum-optimism/optimism
-          ref: ${REF}
+          ref: ${{ env.REF }}
 
       - name: ls
         run: ls -la
