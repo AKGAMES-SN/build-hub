@@ -62,6 +62,8 @@ jobs:
 
       - name: Setup
         uses: ./.github/workflows/setup
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout
         uses: actions/checkout@v4
