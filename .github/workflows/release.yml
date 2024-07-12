@@ -14,9 +14,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ssh-key: ${{ secrets.CHECKOUT_SSH_KEY }}
           repository: AKGAMES-SN/optimism
           path: optimism
-          token: ${{ github.token }}
 
       - name: ls
         run: ls -la optimism
