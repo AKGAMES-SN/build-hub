@@ -2,6 +2,10 @@ inputs:
   github_token:
     required: true
 
+outputs:
+  ref:
+    value: ${{ steps.gitref.outputs.ref }}
+
 runs:
   using: composite
   steps:
@@ -18,5 +22,6 @@ runs:
         username: ${{ github.actor }}
         password: ${{ inputs.github_token }}
 
-    - name: Set GIT_REF env
-      run: echo "GIT_REF=$(echo ${{ github.ref_name }} | cut -d/ -f2)" >> $GITHUB_ENV
+    - name: Output ref
+      id: gitref
+      run: echo "ref=$(echo ${{ github.ref_name }} | cut -d/ -f2)" >> $GITHUB_OUTPUT
