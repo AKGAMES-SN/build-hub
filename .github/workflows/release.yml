@@ -23,6 +23,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup docker
+        uses: ./.github/workflows/setup-docker
+        with:
+          secrets: ${{ secrets }}
+
       - name: Set GIT_REF env
         run: echo "GIT_REF=$(echo ${{ github.ref_name }} | cut -d/ -f2)" >> $GITHUB_ENV
 
@@ -37,9 +42,6 @@ jobs:
       - name: Get GIT_COMMIT
         run: echo "GIT_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
         working-directory: optimism
-
-      - name: Setup docker
-        uses: ./.github/workflows/setup-docker
 
       - name: Build and Push
         uses: docker/bake-action@v4
@@ -64,6 +66,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup docker
+        uses: ./.github/workflows/setup-docker
+
       - name: Set GIT_REF env
         run: echo "GIT_REF=$(echo ${{ github.ref_name }} | cut -d/ -f2)" >> $GITHUB_ENV
 
@@ -76,9 +81,6 @@ jobs:
 
       - name: Get GIT_COMMIT
         run: echo "GIT_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
-
-      - name: Setup docker
-        uses: ./.github/workflows/setup-docker
 
       - name: Build and Push
         uses: docker/build-push-action@v6
