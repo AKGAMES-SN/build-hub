@@ -6,7 +6,7 @@ on:
       - 'optimism/*'
 
 env:
-  REPOSITORY: akgames-sn
+  REPOSITORY: akgames-sn/${{ github.repository }}
 
 jobs:
   optimism:
