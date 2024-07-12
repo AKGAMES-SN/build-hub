@@ -16,7 +16,7 @@ jobs:
         with:
           repository: AKGAMES-SN/optimism
           path: optimism
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}
 
       - name: ls
         run: ls -la optimism
