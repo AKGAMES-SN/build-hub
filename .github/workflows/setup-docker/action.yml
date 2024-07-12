@@ -1,5 +1,5 @@
 inputs:
-  secrets:
+  github_token:
     required: true
 
 runs:
@@ -16,4 +16,4 @@ runs:
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ inputs.secrets.GITHUB_TOKEN }}
+        password: ${{ inputs.github_token }}
