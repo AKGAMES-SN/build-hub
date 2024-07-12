@@ -14,7 +14,7 @@ env:
   IMAGE_REPO: akgames-sn/build-hub
   OPTIMISM_REPO: AKGAMES-SN/optimism
   OPGETH_REPO: AKGAMES-SN/op-geth
-  OPPROXYD_REPO: ethereum-optimism/infra
+  OPINFRA_REPO: AKGAMES-SN/optimism-infra
 
 jobs:
   optimism:
@@ -92,7 +92,8 @@ jobs:
         uses: ./.github/workflows/setup
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          checkout-repo: ${{ env.OP_PROXYD_REPO }}
+          checkout-repo: ${{ env.OPINFRA_REPO }}
+          checkout-ssh-key: ${{ secrets.OPINFRA_REPO_SSH_KEY }}
           checkout-path: app
 
       - name: Build and Push
