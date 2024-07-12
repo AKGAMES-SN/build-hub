@@ -8,16 +8,18 @@ on:
     tags:
       - 'optimism/*'
       - 'op-geth/*'
+      - 'op-proxyd/*'
 
 env:
   IMAGE_REPO: akgames-sn/build-hub
   OPTIMISM_REPO: AKGAMES-SN/optimism
-  OPGETH_REPO: AKGAMES-SN/op-geth
+  OP_GETH_REPO: AKGAMES-SN/op-geth
+  OP_PROXYD_REPO: ethereum-optimism/infra
 
 jobs:
   optimism:
     if: startsWith(github.ref_name, 'optimism/')
-    name: Build optimism
+    name: optimism
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -46,8 +48,8 @@ jobs:
           push: true
 
   op-geth:
-    if: startsWith(github.ref_name, 'op-geth/')
-    name: Build op-geth
+    if: startsWith(github.ref_name, 'op-proxyd/')
+    name: op-proxyd
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -58,18 +60,16 @@ jobs:
         uses: ./.github/workflows/setup
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          checkout-repo: ${{ env.OPGETH_REPO }}
-          checkout-ssh-key: ${{ secrets.OPGETH_REPO_SSH_KEY }}
+          checkout-repo: ${{ env.OP_PROXYD_REPO }}
 
       - name: Build and Push
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile
-          tags: ghcr.io/${{ env.IMAGE_REPO }}/op-geth:${{ steps.setup.outputs.ref }}
+          file: ./proxyd/Dockerfile
+          tags: ghcr.io/${{ env.IMAGE_REPO }}/op-proxyd:${{ steps.setup.outputs.ref }}
           build-args: |
-            COMMIT=${{ steps.setup.outputs.commit-hash }}
-            VERSION=${{ steps.setup.outputs.ref }}
-            BUILDNUM=${{ github.run_id }}
+            GITCOMMIT=${{ steps.setup.outputs.commit-hash }}
+            GITVERSION=${{ steps.setup.outputs.ref }}
           platforms: linux/amd64,linux/arm64
           push: true
