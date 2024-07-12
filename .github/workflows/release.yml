@@ -34,7 +34,7 @@ jobs:
         run: echo "GIT_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
       - name: Setup docker
-        uses: ./.github/workflows/setup
+        uses: ./.github/workflows/setup-docker
 
       - name: Build and Push
         uses: docker/bake-action@v4
@@ -69,7 +69,7 @@ jobs:
         run: echo "GIT_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
       - name: Setup docker
-        uses: ./.github/workflows/setup
+        uses: ./.github/workflows/setup-docker
 
       - name: Build and Push
         uses: docker/build-push-action@v6
