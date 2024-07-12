@@ -32,9 +32,11 @@ jobs:
           repository: ${{ env.OPTIMISM_REPO }}
           ref: ${{ env.GIT_REF }}
           ssh-key: ${{ secrets.OPTIMISM_REPO_SSH_KEY }}
+          path: optimism
 
       - name: Get GIT_COMMIT
         run: echo "GIT_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
+        working-directory: optimism
 
       - name: Setup docker
         uses: ./.github/workflows/setup-docker
@@ -48,6 +50,7 @@ jobs:
           GIT_VERSION: ${{ env.GIT_REF }}
           IMAGE_TAGS: ${{ env.GIT_REF }}
         with:
+          workdir: optimism
           files: docker-bake.hcl
           targets: op-node,op-batcher,op-proposer
           set: '*.platform=linux/amd64,linux/arm64'
