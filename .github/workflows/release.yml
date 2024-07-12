@@ -5,6 +5,10 @@ on:
     tags:
       - 'optimism/*'
 
+env:
+  REPOSITORY: akgames-sn
+  REF: ''
+
 jobs:
   optimism:
     if: startsWith(github.ref_name, 'optimism/')
@@ -40,7 +44,7 @@ jobs:
         uses: docker/bake-action@v4
         env:
           REGISTRY: ghcr.io
-          REPOSITORY: ${{ github.repository }}/optimism
+          REPOSITORY: ${{ env.REPOSITORY }}/optimism
           GIT_COMMIT: ${{ github.sha }}
           GIT_VERSION: ${{ github.ref_name }}
           GIT_BUILDNUM: ${{ github.run_id }}
