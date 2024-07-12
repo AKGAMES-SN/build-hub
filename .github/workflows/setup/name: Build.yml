@@ -24,12 +24,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          path: /tmp/_
 
       - name: Setup
         id: setup
-        uses: /tmp/_/.github/workflows/setup
+        uses: ./.github/workflows/setup
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           checkout-repo: ${{ env.OPTIMISM_REPO }}

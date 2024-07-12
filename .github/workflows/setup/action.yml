@@ -5,8 +5,6 @@ inputs:
     required: true
   checkout-ssh-key:
     default: ''
-  checkout-path:
-    required: true
 
 outputs:
   ref:
@@ -41,10 +39,8 @@ runs:
         repository: ${{ inputs.checkout-repo }}
         ssh-key: ${{ inputs.checkout-ssh-key }}
         ref: ${{ steps.gitref.outputs.out0 }}
-        path: ${{ inputs.checkout-path }}
 
     - name: Output commit-hash
       id: commithash
       run: echo "out0=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-      working-directory: ${{ inputs.checkout-path }}
       shell: bash
