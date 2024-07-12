@@ -14,14 +14,17 @@ jobs:
     name: Build optimism
     runs-on: ubuntu-latest
     steps:
-      - name: Get REF
-        run: echo "REF=$(echo ${{ github.ref_name }} | cut -d/ -f2)" >> $GITHUB_ENV
+      - name: Get GIT_TAG
+        run: echo "GIT_TAG=$(echo ${{ github.ref_name }} | cut -d/ -f2)" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@v4
         with:
           repository: ethereum-optimism/optimism
-          ref: ${{ env.REF }}
+          ref: ${{ env.GIT_TAG }}
+
+      - name: Get GIT_COMMIT
+        run: echo "GIT_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
@@ -41,10 +44,10 @@ jobs:
         env:
           REGISTRY: ghcr.io
           REPOSITORY: ${{ env.REPOSITORY }}/optimism
-          GIT_COMMIT: ${{ github.sha }}
-          GIT_VERSION: ${{ github.ref_name }}
+          GIT_COMMIT: ${{ env.GIT_COMMIT }}
+          GIT_VERSION: ${{ env.GIT_TAG }}
           GIT_BUILDNUM: ${{ github.run_id }}
-          IMAGE_TAGS: ${{ env.REF }}
+          IMAGE_TAGS: ${{ env.GIT_TAG }}
         with:
           files: docker-bake.hcl
           targets: op-node,op-batcher,op-proposer
