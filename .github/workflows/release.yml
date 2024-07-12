@@ -14,7 +14,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          repository: https://github.com/AKGAMES-SN/optimism.git
+          repository: ${{ github.actor }}/optimism
 
       - name: ls
         run: ls optimism
