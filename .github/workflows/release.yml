@@ -9,8 +9,9 @@ on:
       - 'optimism/*'
 
 env:
+  IMAGE_REPO: akgames-sn/build-hub
   OPTIMISM_REPO: AKGAMES-SN/optimism
-  IMAGE_REPOSITORY: akgames-sn/build-hub
+  OPGETH_REPO: ethereum-optimism/op-geth
 
 jobs:
   optimism:
@@ -48,16 +49,14 @@ jobs:
         uses: docker/bake-action@v4
         env:
           REGISTRY: ghcr.io
-          REPOSITORY: ${{ env.IMAGE_REPOSITORY }}
+          REPOSITORY: ${{ env.IMAGE_REPO }}
           GIT_COMMIT: ${{ env.GIT_COMMIT }}
           GIT_VERSION: ${{ env.GIT_REF }}
           IMAGE_TAGS: ${{ env.GIT_REF }}
         with:
           files: docker-bake.hcl
-          targets: op-proposer
-          set: '*.platform=linux/amd64'
-          # targets: op-node,op-batcher,op-proposer
-          # set: '*.platform=linux/amd64,linux/arm64'
+          targets: op-node,op-batcher,op-proposer
+          set: '*.platform=linux/amd64,linux/arm64'
           push: true
 
   # op-geth:
