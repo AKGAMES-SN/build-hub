@@ -15,8 +15,6 @@ env:
   OPGETH_REPO: AKGAMES-SN/op-geth
 
 jobs:
-  setup:
-
   optimism:
     if: startsWith(github.ref_name, 'optimism/')
     name: Build optimism
