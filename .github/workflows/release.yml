@@ -20,6 +20,9 @@ jobs:
     name: Build optimism
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup
         uses: ./.github/workflows/setup
         with:
@@ -54,6 +57,9 @@ jobs:
     name: Build op-geth
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup
         uses: ./.github/workflows/setup
 
