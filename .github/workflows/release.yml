@@ -27,24 +27,16 @@ jobs:
         id: setup
         uses: ./.github/workflows/setup
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ env.OPTIMISM_REPO }}
-          ref: ${{ steps.setup.outputs.ref }}
-          ssh-key: ${{ secrets.OPTIMISM_REPO_SSH_KEY }}
-
-      - name: Get GIT_COMMIT
-        run: echo "GIT_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          checkout-repo: ${{ env.OPTIMISM_REPO }}
+          checkout-ssh-key: ${{ secrets.OPTIMISM_REPO_SSH_KEY }}
 
       - name: Build and Push
         uses: docker/bake-action@v4
         env:
           REGISTRY: ghcr.io
           REPOSITORY: ${{ env.IMAGE_REPO }}
-          GIT_COMMIT: ${{ env.GIT_COMMIT }}
+          GIT_COMMIT: ${{ steps.setup.outputs.commit-hash }}
           GIT_VERSION: ${{ steps.setup.outputs.ref }}
           IMAGE_TAGS: ${{ steps.setup.outputs.ref }}
         with:
@@ -64,7 +56,7 @@ jobs:
       - name: Setup
         uses: ./.github/workflows/setup
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout
         uses: actions/checkout@v4

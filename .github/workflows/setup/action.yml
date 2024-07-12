@@ -1,10 +1,16 @@
 inputs:
-  github_token:
+  github-token:
     required: true
+  checkout-repo:
+    required: true
+  checkout-ssh-key:
+    default: ''
 
 outputs:
   ref:
-    value: ${{ steps.gitref.outputs.ref }}
+    value: ${{ steps.gitref.outputs.out0 }}
+  commit-hash:
+    value: ${{ steps.commithash.outputs.out0 }}
 
 runs:
   using: composite
@@ -20,9 +26,21 @@ runs:
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ inputs.github_token }}
+        password: ${{ inputs.github-token }}
 
     - name: Output ref
       id: gitref
-      run: echo "ref=$(echo ${{ github.ref_name }} | cut -d/ -f2)" >> $GITHUB_OUTPUT
+      run: echo "out0=$(echo ${{ github.ref_name }} | cut -d/ -f2)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.checkout-repo }}
+        ssh-key: ${{ inputs.checkout-ssh-key }}
+        ref: ${{ steps.gitref.outputs.out0 }}
+
+    - name: Output commit-hash
+      id: commithash
+      run: echo "out0=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
       shell: bash
