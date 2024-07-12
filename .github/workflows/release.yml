@@ -15,7 +15,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ github.actor }}/optimism
-          token: ${{ secrets.GH_PAT }}
+          path: optimism
+          token: ${{ secrets.token }}
 
       - name: ls
         run: ls -la optimism
