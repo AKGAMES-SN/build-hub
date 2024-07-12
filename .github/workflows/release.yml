@@ -48,6 +48,6 @@ jobs:
         with:
           files: docker-bake.hcl
           targets: op-node,op-batcher,op-proposer
-          set: *.platform=linux/amd64
+          set: '*.platform=linux/amd64'
           # set: '*.platform=linux/amd64,linux/arm64'
           push: true
