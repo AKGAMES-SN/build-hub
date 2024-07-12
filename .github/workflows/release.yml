@@ -24,16 +24,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          path: /tmp/_
 
       - name: Setup
         id: setup
-        uses: /tmp/_/.github/workflows/setup
+        uses: ./.github/workflows/setup
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           checkout-repo: ${{ env.OPTIMISM_REPO }}
           checkout-ssh-key: ${{ secrets.OPTIMISM_REPO_SSH_KEY }}
+          checkout-path: app
 
       - name: Build and Push
         uses: docker/bake-action@v4
@@ -44,6 +43,7 @@ jobs:
           GIT_VERSION: ${{ steps.setup.outputs.ref }}
           IMAGE_TAGS: ${{ steps.setup.outputs.ref }}
         with:
+          workdir: app
           files: docker-bake.hcl
           targets: op-node,op-batcher,op-proposer
           set: '*.platform=linux/amd64,linux/arm64'
@@ -64,11 +64,13 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           checkout-repo: ${{ env.OPGETH_REPO }}
           checkout-ssh-key: ${{ secrets.OPGETH_REPO_SSH_KEY }}
+          checkout-path: app
 
       - name: Build and Push
         uses: docker/build-push-action@v6
         with:
-          file: ./Dockerfile
+          context: ./app
+          file: ./app/Dockerfile
           tags: ghcr.io/${{ env.IMAGE_REPO }}/op-geth:${{ steps.setup.outputs.ref }}
           build-args: |
             COMMIT=${{ steps.setup.outputs.commit-hash }}
@@ -91,11 +93,13 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           checkout-repo: ${{ env.OP_PROXYD_REPO }}
+          checkout-path: app
 
       - name: Build and Push
         uses: docker/build-push-action@v6
         with:
-          file: ./proxyd/Dockerfile
+          context: ./app
+          file: ./app/proxyd/Dockerfile
           tags: ghcr.io/${{ env.IMAGE_REPO }}/op-proxyd:${{ steps.setup.outputs.ref }}
           build-args: |
             GITCOMMIT=${{ steps.setup.outputs.commit-hash }}
