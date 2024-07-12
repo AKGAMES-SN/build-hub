@@ -13,8 +13,8 @@ on:
 env:
   IMAGE_REPO: akgames-sn/build-hub
   OPTIMISM_REPO: AKGAMES-SN/optimism
-  OP_GETH_REPO: AKGAMES-SN/op-geth
-  OP_PROXYD_REPO: ethereum-optimism/infra
+  OPGETH_REPO: AKGAMES-SN/op-geth
+  OPPROXYD_REPO: ethereum-optimism/infra
 
 jobs:
   optimism:
@@ -32,6 +32,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           checkout-repo: ${{ env.OPTIMISM_REPO }}
           checkout-ssh-key: ${{ secrets.OPTIMISM_REPO_SSH_KEY }}
+          checkout-path: app
 
       - name: Build and Push
         uses: docker/bake-action@v4
@@ -42,12 +43,43 @@ jobs:
           GIT_VERSION: ${{ steps.setup.outputs.ref }}
           IMAGE_TAGS: ${{ steps.setup.outputs.ref }}
         with:
+          workdir: app
           files: docker-bake.hcl
           targets: op-node,op-batcher,op-proposer
           set: '*.platform=linux/amd64,linux/arm64'
           push: true
 
   op-geth:
+    if: startsWith(github.ref_name, 'op-geth/')
+    name: op-geth
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        id: setup
+        uses: ./.github/workflows/setup
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          checkout-repo: ${{ env.OPGETH_REPO }}
+          checkout-ssh-key: ${{ secrets.OPGETH_REPO_SSH_KEY }}
+          checkout-path: app
+
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: app
+          file: ./Dockerfile
+          tags: ghcr.io/${{ env.IMAGE_REPO }}/op-geth:${{ steps.setup.outputs.ref }}
+          build-args: |
+            COMMIT=${{ steps.setup.outputs.commit-hash }}
+            VERSION=${{ steps.setup.outputs.ref }}
+            BUILDNUM=${{ github.run_id }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+
+  op-proxyd:
     if: startsWith(github.ref_name, 'op-proxyd/')
     name: op-proxyd
     runs-on: ubuntu-latest
@@ -61,11 +93,12 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           checkout-repo: ${{ env.OP_PROXYD_REPO }}
+          checkout-path: app
 
       - name: Build and Push
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: app
           file: ./proxyd/Dockerfile
           tags: ghcr.io/${{ env.IMAGE_REPO }}/op-proxyd:${{ steps.setup.outputs.ref }}
           build-args: |
