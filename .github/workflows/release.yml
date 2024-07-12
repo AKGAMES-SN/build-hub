@@ -7,7 +7,7 @@ on:
 
 env:
   OPTIMISM_REPO: AKGAMES-SN/optimism
-  IMAGE_REPOSITORY_PREFIX: akgames-sn
+  IMAGE_REPOSITORY_PREFIX: akgames-sn/build-hub
 
 jobs:
   optimism:
@@ -37,7 +37,6 @@ jobs:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -51,8 +50,9 @@ jobs:
           IMAGE_TAGS: ${{ env.GIT_REF }}
         with:
           files: docker-bake.hcl
-          targets: op-node,op-batcher,op-proposer
+          targets: op-proposer
           set: '*.platform=linux/amd64'
+          # targets: op-node,op-batcher,op-proposer
           # set: '*.platform=linux/amd64,linux/arm64'
           push: true
 
