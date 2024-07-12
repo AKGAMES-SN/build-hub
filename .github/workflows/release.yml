@@ -6,7 +6,7 @@ on:
       - 'optimism/*'
 
 env:
-  IMAGE_REPOSITORY: akgames-sn/${{ github.repository }}
+  IMAGE_REPOSITORY_PREFIX: akgames-sn/build-hub
 
 jobs:
   optimism:
@@ -43,10 +43,9 @@ jobs:
         uses: docker/bake-action@v4
         env:
           REGISTRY: ghcr.io
-          REPOSITORY: ${{ env.IMAGE_REPOSITORY }}/optimism
+          REPOSITORY: ${{ env.IMAGE_REPOSITORY_PREFIX }}/optimism
           GIT_COMMIT: ${{ env.GIT_COMMIT }}
           GIT_VERSION: ${{ env.GIT_TAG }}
-          GIT_BUILDNUM: ${{ github.run_id }}
           IMAGE_TAGS: ${{ env.GIT_TAG }}
         with:
           files: docker-bake.hcl
