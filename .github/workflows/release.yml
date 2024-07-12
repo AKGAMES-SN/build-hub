@@ -23,9 +23,6 @@ jobs:
           repository: ethereum-optimism/optimism
           ref: ${{ env.REF }}
 
-      - name: ls
-        run: ls -la
-
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -43,7 +40,7 @@ jobs:
         uses: docker/bake-action@v4
         env:
           REGISTRY: ghcr.io
-          REPOSITORY: ${{ github.REPOSITORY }}/optimism
+          REPOSITORY: ${{ env.REPOSITORY }}/optimism
           GIT_COMMIT: ${{ github.sha }}
           GIT_VERSION: ${{ github.ref_name }}
           GIT_BUILDNUM: ${{ github.run_id }}
