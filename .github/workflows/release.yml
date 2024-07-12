@@ -1,5 +1,8 @@
 name: Build
 
+permissions:
+  packages: write
+
 on:
   push:
     tags:
@@ -7,7 +10,7 @@ on:
 
 env:
   OPTIMISM_REPO: AKGAMES-SN/optimism
-  IMAGE_REPOSITORY_PREFIX: akgames-sn/build-hub
+  IMAGE_REPOSITORY: akgames-sn/build-hub
 
 jobs:
   optimism:
@@ -45,7 +48,7 @@ jobs:
         uses: docker/bake-action@v4
         env:
           REGISTRY: ghcr.io
-          REPOSITORY: ${{ env.IMAGE_REPOSITORY_PREFIX }}
+          REPOSITORY: ${{ env.IMAGE_REPOSITORY }}
           GIT_COMMIT: ${{ env.GIT_COMMIT }}
           GIT_VERSION: ${{ env.GIT_REF }}
           IMAGE_TAGS: ${{ env.GIT_REF }}
