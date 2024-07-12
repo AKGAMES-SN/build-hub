@@ -6,6 +6,7 @@ on:
       - 'optimism/*'
 
 env:
+  OPTIMISM_REPO: AKGAMES-SN/optimism
   IMAGE_REPOSITORY_PREFIX: akgames-sn/build-hub
 
 jobs:
@@ -14,14 +15,15 @@ jobs:
     name: Build optimism
     runs-on: ubuntu-latest
     steps:
-      - name: Get GIT_TAG
-        run: echo "GIT_TAG=$(echo ${{ github.ref_name }} | cut -d/ -f2)" >> $GITHUB_ENV
+      - name: Set GIT_REF env
+        run: echo "GIT_REF=$(echo ${{ github.ref_name }} | cut -d/ -f2)" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          repository: ethereum-optimism/optimism
-          ref: ${{ env.GIT_TAG }}
+          repository: ${{ env.OPTIMISM_REPO }}
+          ref: ${{ env.GIT_REF }}
+          ssh-key: ${{ secrets.CHECKOUT_SSH_KEY }}
 
       - name: Get GIT_COMMIT
         run: echo "GIT_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
@@ -45,8 +47,8 @@ jobs:
           REGISTRY: ghcr.io
           REPOSITORY: ${{ env.IMAGE_REPOSITORY_PREFIX }}/optimism
           GIT_COMMIT: ${{ env.GIT_COMMIT }}
-          GIT_VERSION: ${{ env.GIT_TAG }}
-          IMAGE_TAGS: ${{ env.GIT_TAG }}
+          GIT_VERSION: ${{ env.GIT_REF }}
+          IMAGE_TAGS: ${{ env.GIT_REF }}
         with:
           files: docker-bake.hcl
           targets: op-node,op-batcher,op-proposer
