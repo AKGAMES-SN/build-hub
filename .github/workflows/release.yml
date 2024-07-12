@@ -7,7 +7,7 @@ on:
 
 env:
   OPTIMISM_REPO: AKGAMES-SN/optimism
-  IMAGE_REPOSITORY_PREFIX: akgames-sn/build-hub
+  IMAGE_REPOSITORY_PREFIX: akgames-sn
 
 jobs:
   optimism:
