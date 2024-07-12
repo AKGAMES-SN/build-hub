@@ -16,7 +16,7 @@ jobs:
         with:
           repository: ${{ github.actor }}/optimism
           path: optimism
-          token: ${{ secrets.token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: ls
         run: ls -la optimism
