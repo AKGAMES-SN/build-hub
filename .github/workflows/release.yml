@@ -13,7 +13,6 @@ on:
 env:
   IMAGE_REPO: akgames-sn/build-hub
   OPTIMISM_REPO: AKGAMES-SN/optimism
-  OPINFRA_REPO: AKGAMES-SN/optimism-infra
 
 jobs:
   optimism:
@@ -90,15 +89,14 @@ jobs:
         uses: ./.github/workflows/setup
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          checkout-repo: ${{ env.OPINFRA_REPO }}
-          checkout-ssh-key: ${{ secrets.OPINFRA_REPO_SSH_KEY }}
+          checkout-repo: ethereum-optimism/infra
           checkout-path: app
 
       - name: Build and Push
         uses: docker/build-push-action@v6
         with:
           context: ./app
-          file: ./app/proxyd/Dockerfile
+          file: ./Dockerfile.op-proxyd
           tags: ghcr.io/${{ env.IMAGE_REPO }}/op-proxyd:${{ steps.setup.outputs.ref }}
           build-args: |
             GITCOMMIT=${{ steps.setup.outputs.commit-hash }}
