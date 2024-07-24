@@ -13,7 +13,6 @@ on:
 env:
   IMAGE_REPO: akgames-sn/build-hub
   OPTIMISM_REPO: AKGAMES-SN/optimism
-  OPGETH_REPO: AKGAMES-SN/op-geth
   OPINFRA_REPO: AKGAMES-SN/optimism-infra
 
 jobs:
@@ -62,15 +61,14 @@ jobs:
         uses: ./.github/workflows/setup
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          checkout-repo: ${{ env.OPGETH_REPO }}
-          checkout-ssh-key: ${{ secrets.OPGETH_REPO_SSH_KEY }}
+          checkout-repo: ethereum-optimism/op-geth
           checkout-path: app
 
       - name: Build and Push
         uses: docker/build-push-action@v6
         with:
           context: ./app
-          file: ./app/Dockerfile
+          file: ./Dockerfile.op-geth
           tags: ghcr.io/${{ env.IMAGE_REPO }}/op-geth:${{ steps.setup.outputs.ref }}
           build-args: |
             COMMIT=${{ steps.setup.outputs.commit-hash }}
