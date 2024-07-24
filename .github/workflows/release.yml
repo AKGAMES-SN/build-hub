@@ -11,6 +11,7 @@ on:
       - 'op-proxyd/*'
       - 'bs-backend/*'
       - 'bs-frontend/*'
+      - 'graph-node/*'
 
 env:
   IMAGE_REPO: akgames-sn/build-hub
@@ -168,5 +169,35 @@ jobs:
           build-args: |
             GIT_COMMIT_SHA=${{ steps.setup.outputs.commit-hash }}
             GIT_TAG=${{ steps.setup.outputs.ref }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+
+  graph-node:
+    if: startsWith(github.ref_name, 'graph-node/')
+    name: graph-node
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        id: setup
+        uses: ./.github/workflows/setup
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          checkout-repo: graphprotocol/graph-node
+          checkout-path: app
+
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./app
+          file: ./app/docker/Dockerfile
+          target: graph-node
+          tags: ghcr.io/${{ env.IMAGE_REPO }}/graph-node:${{ steps.setup.outputs.ref }}
+          build-args: |
+            COMMIT_SHA=${{ steps.setup.outputs.commit-hash }}
+            BRANCH_NAME=${{ steps.setup.outputs.ref }}
+            TAG_NAME=${{ steps.setup.outputs.ref }}
           platforms: linux/amd64,linux/arm64
           push: true
