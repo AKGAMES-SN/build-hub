@@ -175,7 +175,7 @@ jobs:
   graph-node:
     if: startsWith(github.ref_name, 'graph-node/')
     name: graph-node
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout
         uses: actions/checkout@v4
