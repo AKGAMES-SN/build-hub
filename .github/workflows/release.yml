@@ -9,12 +9,12 @@ on:
       - 'optimism/*'
       - 'op-geth/*'
       - 'op-proxyd/*'
+      - 'bs-backend/*'
+      - 'bs-frontend/*'
+      - 'graph-node/*'
 
 env:
   IMAGE_REPO: akgames-sn/build-hub
-  OPTIMISM_REPO: AKGAMES-SN/optimism
-  OPGETH_REPO: AKGAMES-SN/op-geth
-  OPINFRA_REPO: AKGAMES-SN/optimism-infra
 
 jobs:
   optimism:
@@ -30,7 +30,7 @@ jobs:
         uses: ./.github/workflows/setup
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          checkout-repo: ${{ env.OPTIMISM_REPO }}
+          checkout-repo: AKGAMES-SN/optimism
           checkout-ssh-key: ${{ secrets.OPTIMISM_REPO_SSH_KEY }}
           checkout-path: app
 
@@ -62,15 +62,14 @@ jobs:
         uses: ./.github/workflows/setup
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          checkout-repo: ${{ env.OPGETH_REPO }}
-          checkout-ssh-key: ${{ secrets.OPGETH_REPO_SSH_KEY }}
+          checkout-repo: ethereum-optimism/op-geth
           checkout-path: app
 
       - name: Build and Push
         uses: docker/build-push-action@v6
         with:
           context: ./app
-          file: ./app/Dockerfile
+          file: ./Dockerfile.op-geth
           tags: ghcr.io/${{ env.IMAGE_REPO }}/op-geth:${{ steps.setup.outputs.ref }}
           build-args: |
             COMMIT=${{ steps.setup.outputs.commit-hash }}
@@ -92,18 +91,113 @@ jobs:
         uses: ./.github/workflows/setup
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          checkout-repo: ${{ env.OPINFRA_REPO }}
-          checkout-ssh-key: ${{ secrets.OPINFRA_REPO_SSH_KEY }}
+          checkout-repo: ethereum-optimism/infra
           checkout-path: app
 
       - name: Build and Push
         uses: docker/build-push-action@v6
         with:
           context: ./app
-          file: ./app/proxyd/Dockerfile
+          file: ./Dockerfile.op-proxyd
           tags: ghcr.io/${{ env.IMAGE_REPO }}/op-proxyd:${{ steps.setup.outputs.ref }}
           build-args: |
             GITCOMMIT=${{ steps.setup.outputs.commit-hash }}
             GITVERSION=${{ steps.setup.outputs.ref }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+
+  bs-backend:
+    if: startsWith(github.ref_name, 'bs-backend/')
+    name: bs-backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        id: setup
+        uses: ./.github/workflows/setup
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          checkout-repo: blockscout/blockscout
+          checkout-path: app
+
+      - name: Set RELEASE_VERSION
+        id: relver
+        run: echo "out0=$(echo ${{ steps.setup.outputs.ref }} | egrep -o '[0-9.]+')" >> $GITHUB_OUTPUT
+
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./app
+          file: ./Dockerfile.bs-backend
+          tags: ghcr.io/${{ env.IMAGE_REPO }}/bs-backend:${{ steps.setup.outputs.ref }}
+          build-args: |
+            CACHE_EXCHANGE_RATES_PERIOD=""
+            API_V1_READ_METHODS_DISABLED=false
+            DISABLE_WEBAPP=false
+            API_V1_WRITE_METHODS_DISABLED=false
+            CACHE_TOTAL_GAS_USAGE_COUNTER_ENABLED=""
+            CACHE_ADDRESS_WITH_BALANCES_UPDATE_INTERVAL=""
+            ADMIN_PANEL_ENABLED=""
+            RELEASE_VERSION=${{ steps.relver.outputs.out0 }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+
+  bs-frontend:
+    if: startsWith(github.ref_name, 'bs-frontend/')
+    name: bs-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        id: setup
+        uses: ./.github/workflows/setup
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          checkout-repo: blockscout/frontend
+          checkout-path: app
+
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./app
+          file: ./Dockerfile.bs-frontend
+          tags: ghcr.io/${{ env.IMAGE_REPO }}/bs-frontend:${{ steps.setup.outputs.ref }}
+          build-args: |
+            GIT_COMMIT_SHA=${{ steps.setup.outputs.commit-hash }}
+            GIT_TAG=${{ steps.setup.outputs.ref }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+
+  graph-node:
+    if: startsWith(github.ref_name, 'graph-node/')
+    name: graph-node
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        id: setup
+        uses: ./.github/workflows/setup
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          checkout-repo: graphprotocol/graph-node
+          checkout-path: app
+
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./app
+          file: ./app/docker/Dockerfile
+          target: graph-node
+          tags: ghcr.io/${{ env.IMAGE_REPO }}/graph-node:${{ steps.setup.outputs.ref }}
+          build-args: |
+            COMMIT_SHA=${{ steps.setup.outputs.commit-hash }}
+            BRANCH_NAME=${{ steps.setup.outputs.ref }}
+            TAG_NAME=${{ steps.setup.outputs.ref }}
           platforms: linux/amd64,linux/arm64
           push: true
