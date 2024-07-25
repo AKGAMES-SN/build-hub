@@ -188,12 +188,6 @@ jobs:
           checkout-repo: graphprotocol/graph-node
           checkout-path: app
 
-      # 標準スペック(4コア/16GB)ではメモリが足りないのでSwapを追加
-      - name: Set Swap Memory
-        uses: pierotofy/set-swap-space@master
-        with:
-          swap-size-gb: 10
-
       - name: Build and Push
         uses: docker/build-push-action@v6
         with:
