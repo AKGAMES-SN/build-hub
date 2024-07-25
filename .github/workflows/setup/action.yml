@@ -7,7 +7,6 @@ inputs:
     default: ''
   checkout-path:
     required: true
-  checkout-ssh-key-self:
 
 outputs:
   ref:
@@ -18,11 +17,6 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        ssh-key: ${{ inputs.checkout-ssh-key-self }}
-
     - name: Setup QEMU
       uses: docker/setup-qemu-action@v3
 

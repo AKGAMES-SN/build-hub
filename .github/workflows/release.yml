@@ -22,15 +22,17 @@ jobs:
     name: optimism
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup
         id: setup
         uses: ./.github/workflows/setup
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           checkout-repo: AKGAMES-SN/optimism
-          checkout-path: app
           checkout-ssh-key: ${{ secrets.OPTIMISM_REPO_SSH_KEY }}
-          checkout-ssh-key-self: ${{ secrets.SELF_REPO_SSH_KEY }}
+          checkout-path: app
 
       - name: Build and Push
         uses: docker/bake-action@v4
@@ -52,6 +54,9 @@ jobs:
     name: op-geth
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup
         id: setup
         uses: ./.github/workflows/setup
@@ -59,7 +64,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           checkout-repo: ethereum-optimism/op-geth
           checkout-path: app
-          checkout-ssh-key-self: ${{ secrets.SELF_REPO_SSH_KEY }}
 
       - name: Build and Push
         uses: docker/build-push-action@v6
@@ -79,6 +83,9 @@ jobs:
     name: op-proxyd
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup
         id: setup
         uses: ./.github/workflows/setup
@@ -86,7 +93,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           checkout-repo: ethereum-optimism/infra
           checkout-path: app
-          checkout-ssh-key-self: ${{ secrets.SELF_REPO_SSH_KEY }}
 
       - name: Build and Push
         uses: docker/build-push-action@v6
@@ -105,6 +111,9 @@ jobs:
     name: bs-backend
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup
         id: setup
         uses: ./.github/workflows/setup
@@ -112,7 +121,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           checkout-repo: blockscout/blockscout
           checkout-path: app
-          checkout-ssh-key-self: ${{ secrets.SELF_REPO_SSH_KEY }}
 
       - name: Set RELEASE_VERSION
         id: relver
@@ -141,6 +149,9 @@ jobs:
     name: bs-frontend
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup
         id: setup
         uses: ./.github/workflows/setup
@@ -148,7 +159,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           checkout-repo: blockscout/frontend
           checkout-path: app
-          checkout-ssh-key-self: ${{ secrets.SELF_REPO_SSH_KEY }}
 
       - name: Build and Push
         uses: docker/build-push-action@v6
@@ -167,6 +177,9 @@ jobs:
     name: graph-node
     runs-on: self-hosted
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup
         id: setup
         uses: ./.github/workflows/setup
@@ -174,7 +187,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           checkout-repo: graphprotocol/graph-node
           checkout-path: app
-          checkout-ssh-key-self: ${{ secrets.SELF_REPO_SSH_KEY }}
 
       - name: Build and Push
         uses: docker/build-push-action@v6
