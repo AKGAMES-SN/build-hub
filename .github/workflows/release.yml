@@ -126,7 +126,7 @@ jobs:
 
       - name: Set RELEASE_VERSION
         id: relver
-        run: echo "out0=$(echo ${{ steps.setup.outputs.ref }} | egrep -o '[0-9.]+')" >> $GITHUB_OUTPUT
+        run: echo "out0=$(echo ${{ steps.setup.outputs.ref }} | sed -e 's#.*\([0-9]\+\.[0-9]\+\.[0-9]\+\).*#\1#g')" >> $GITHUB_OUTPUT
 
       - name: Build and Push
         uses: docker/build-push-action@v6
@@ -222,7 +222,7 @@ jobs:
 
       - name: Set RELEASE_VERSION
         id: relver
-        run: echo "out0=$(echo ${{ steps.setup.outputs.ref }} | egrep -o '[0-9.]+')" >> $GITHUB_OUTPUT
+        run: echo "out0=$(echo ${{ steps.setup.outputs.ref }} | sed -e 's#.*\([0-9]\+\.[0-9]\+\.[0-9]\+\).*#\1#g')" >> $GITHUB_OUTPUT
 
       - name: Build and Push
         uses: docker/build-push-action@v6
