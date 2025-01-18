@@ -12,6 +12,8 @@ on:
       - 'bs-backend/*'
       - 'bs-frontend/*'
       - 'graph-node/*'
+      - 'oasys-bs-backend/*'
+      - 'oasys-bs-frontend/*'
 
 env:
   IMAGE_REPO: akgames-sn/build-hub
@@ -199,5 +201,71 @@ jobs:
             COMMIT_SHA=${{ steps.setup.outputs.commit-hash }}
             BRANCH_NAME=${{ steps.setup.outputs.ref }}
             TAG_NAME=${{ steps.setup.outputs.ref }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+
+  oasys-bs-backend:
+    if: startsWith(github.ref_name, 'oasys-bs-backend/')
+    name: oasys-bs-backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        id: setup
+        uses: ./.github/workflows/setup
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          checkout-repo: oasysgames/blockscout-v6-backend
+          checkout-path: app
+
+      - name: Set RELEASE_VERSION
+        id: relver
+        run: echo "out0=$(echo ${{ steps.setup.outputs.ref }} | egrep -o '[0-9.]+')" >> $GITHUB_OUTPUT
+
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./app
+          file: ./Dockerfile.oasys-bs-backend
+          tags: ghcr.io/${{ env.IMAGE_REPO }}/oasys-bs-backend:${{ steps.setup.outputs.ref }}
+          build-args: |
+            CACHE_EXCHANGE_RATES_PERIOD=""
+            API_V1_READ_METHODS_DISABLED=false
+            DISABLE_WEBAPP=false
+            API_V1_WRITE_METHODS_DISABLED=false
+            CACHE_TOTAL_GAS_USAGE_COUNTER_ENABLED=""
+            CACHE_ADDRESS_WITH_BALANCES_UPDATE_INTERVAL=""
+            ADMIN_PANEL_ENABLED=""
+            RELEASE_VERSION=${{ steps.relver.outputs.out0 }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+
+  oasys-bs-frontend:
+    if: startsWith(github.ref_name, 'oasys-bs-frontend/')
+    name: oasys-bs-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        id: setup
+        uses: ./.github/workflows/setup
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          checkout-repo: oasysgames/blockscout-v6-frontend
+          checkout-path: app
+
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./app
+          file: ./Dockerfile.oasys-bs-frontend
+          tags: ghcr.io/${{ env.IMAGE_REPO }}/oasys-bs-frontend:${{ steps.setup.outputs.ref }}
+          build-args: |
+            GIT_COMMIT_SHA=${{ steps.setup.outputs.commit-hash }}
+            GIT_TAG=${{ steps.setup.outputs.ref }}
           platforms: linux/amd64,linux/arm64
           push: true
